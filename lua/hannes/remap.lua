@@ -1,3 +1,3 @@
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 vim.api.nvim_set_keymap('n', '<C-q>', '<C-v>', { noremap = true })
-vim.keymap.set('t', '<C-w>h', "<C-\\><C-n><C-w>h",{silent = true})
+vim.api.nvim_set_keymap('t', '<C-[>', '<C-\\><C-n>', {noremap = true})

@@ -30,3 +30,7 @@ vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
+
+if vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1 then
+    vim.o.shell = 'pwsh'
+end
