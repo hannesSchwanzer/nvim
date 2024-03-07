@@ -2,12 +2,8 @@
 return {
 
 
-    'ellisonleao/gruvbox.nvim',
-
-    { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
-    'nvim-treesitter/playground',
-    'theprimeagen/harpoon',
-    'tpope/vim-fugitive',
+    --'ellisonleao/gruvbox.nvim',
+    'rebelot/kanagawa.nvim',
 
     {
         'VonHeikemen/lsp-zero.nvim',
