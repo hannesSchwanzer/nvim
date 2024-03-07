@@ -1,36 +1,60 @@
---vim.opt.guicursor = ""
+-- Set to true if you have a Nerd Font installed
+vim.g.have_nerd_font = false
 
-vim.opt.nu = true
+-- [[ Setting options ]]
+-- See `:help vim.opt`
+-- NOTE: You can change these options as you wish!
+--  For more options, you can see `:help option-list`
+
+-- Show line number and make it relativ
+vim.opt.number = true
 vim.opt.relativenumber = true
 
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
+-- Enable mouse mode, can be useful for resizing splits for example!
+vim.opt.mouse = 'a'
 
-vim.opt.smartindent = true
+-- Don't show the mode, since it's already in status line
+vim.opt.showmode = false
 
-vim.opt.wrap = false
+-- Sync clipboard between OS and Neovim.
+--  See `:help 'clipboard'`
+vim.opt.clipboard = 'unnamedplus'
 
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undodir = vim.loop.os_homedir() .. "/.vim/undodir"
+-- Enable break indent
+vim.opt.breakindent = true
 
+-- Save undo history
+vim.opt.undodir = vim.loop.os_homedir() .. '/.vim/undodir'
 vim.opt.undofile = true
 
-vim.opt.hlsearch = false
-vim.opt.incsearch = true
+-- Case-insensitive searching UNLESS \C or capital in search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
-vim.opt.termguicolors = true
+-- Keep signcolumn on by default
+vim.opt.signcolumn = 'yes'
 
-vim.opt.scrolloff = 8
-vim.opt.signcolumn = "yes"
-vim.opt.isfname:append("@-@")
+-- Decrease update time
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 300
 
-vim.opt.updatetime = 50
+-- Configure how new splits should be opened
+vim.opt.splitright = true
+vim.opt.splitbelow = true
 
-vim.opt.colorcolumn = "80"
+-- Sets how neovim will display certain whitespace in the editor.
+--  See `:help 'list'`
+--  and `:help 'listchars'`
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
-if vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1 then
-    vim.o.shell = 'pwsh'
-end
+-- Preview substitutions live, as you type!
+vim.opt.inccommand = 'split'
+
+-- Show which line your cursor is on
+vim.opt.cursorline = true
+
+-- Minimal number of screen lines to keep above and below the cursor.
+vim.opt.scrolloff = 10
+
+vim.opt.hlsearch = true
