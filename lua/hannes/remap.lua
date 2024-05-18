@@ -51,14 +51,20 @@ vim.keymap.set('n', '<C-u>', '<C-u>zz')
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
--- Yanks into clipboard
-vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]])
-vim.keymap.set('n', '<leader>Y', [["+Y]])
-
 -- Deletes without coping
-vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
+vim.keymap.set({ 'n', 'v' }, 'd', [["dd]])
+vim.keymap.set({ 'n', 'v' }, 'D', [["dD]])
+vim.keymap.set('n', '<leader>d', '<cmd>let @+=@d<CR>')
+
+vim.keymap.set({ 'n', 'v' }, 'x', [["xx]])
+vim.keymap.set({ 'n', 'v' }, 'X', [["xX]])
+
+vim.keymap.set({ 'n', 'v' }, 'c', [["cc]])
+vim.keymap.set({ 'n', 'v' }, 'C', [["cC]])
 
 -- Formats the file if a lsp is running
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 
 vim.keymap.set('n', ' ', '<Nop>')
+
+vim.keymap.set("x", "<leader>p", [["_dP]])
