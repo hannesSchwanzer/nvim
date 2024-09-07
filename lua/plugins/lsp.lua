@@ -1,3 +1,8 @@
+local langs = {
+  csharp = true,
+  godot = true,
+}
+
 return {
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -9,6 +14,13 @@ return {
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
+
+      {
+        'Hoffs/omnisharp-extended-lsp.nvim',
+        cond = function ()
+          return langs["csharp"]
+        end
+      },
     },
     config = function()
       --  This function gets run when an LSP attaches to a particular buffer.
@@ -18,26 +30,24 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+
           local map = function(keys, func, desc)
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          -- Jump to the definition of the word under your cursor.
-          --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-T>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-
-          -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
-          -- Jump to the implementation of the word under your cursor.
-          --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-
-          -- Jump to the type of the word under your cursor.
-          --  Useful when you're not sure what type a variable is and you want to see
-          --  the definition of its *type*, not where it was *defined*.
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          if client ~= nil and client.name == "omnisharp" then
+            -- Use omnisharp-extended functions for C#
+            map('gd', function() require('omnisharp_extended').lsp_definition() end, '[G]oto [D]efinition')
+            map('<leader>D', function() require('omnisharp_extended').lsp_type_definition() end, 'Type [D]efinition')
+            map('gr', function() require('omnisharp_extended').lsp_references() end, '[G]oto [R]eferences')
+            map('gi', function() require('omnisharp_extended').lsp_implementation() end, '[G]oto [I]mplementation')
+          else
+              map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+              map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+              map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+              map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          end
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
@@ -88,6 +98,12 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
+      -- Godot Support
+      if langs['godot'] then
+      require('lspconfig').gdscript.setup(capabilities)
+      end
+
+
       -- Enable the following language servers
       --  Add any additional override configuration in the following tables. Available keys are:
       --  - cmd (table): Override the default command used to start the server
@@ -99,6 +115,7 @@ return {
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
+        -- jedi_language_server = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -136,6 +153,11 @@ return {
           },
         },
       }
+
+      if langs['csharp'] then
+        servers.omnisharp = {}
+      end
+
 
       require('mason').setup()
 
