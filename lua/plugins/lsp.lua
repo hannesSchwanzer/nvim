@@ -1,8 +1,4 @@
-local langs = {
-  csharp = true,
-  godot = true,
-}
-
+local langs = require("lsp-serverlist")
 return {
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -98,11 +94,6 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Godot Support
-      if langs['godot'] then
-      require('lspconfig').gdscript.setup(capabilities)
-      end
-
 
       -- Enable the following language servers
       --  Add any additional override configuration in the following tables. Available keys are:
@@ -112,21 +103,49 @@ return {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- jedi_language_server = {},
-        -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
-        -- volar = {},
+      }
 
-        lua_ls = {
+
+      if langs['godot'] then
+      require('lspconfig').gdscript.setup(capabilities)
+      end
+
+      if langs['csharp'] then
+        servers.omnisharp = {}
+      end
+
+      if langs['latex'] then
+        servers.texlab = {}
+      end
+
+      if langs['c'] then
+        servers.clangd = {}
+      end
+
+      if langs['arduino'] then
+        servers.arduino_language_server = {}
+      end
+
+      if langs['python'] then
+        servers.pyright = {}
+      end
+
+      if langs['rust'] then
+        servers.rust_analyzer = {}
+      end
+
+      if langs['typescript'] then
+        servers.tsserver = {}
+      end
+
+      if langs['lua'] then
+        servers.lua_ls = {
           -- cmd = {...},
           -- filetypes { ...},
           -- capabilities = {},
@@ -151,13 +170,8 @@ return {
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
-        },
-      }
-
-      if langs['csharp'] then
-        servers.omnisharp = {}
+        }
       end
-
 
       require('mason').setup()
 
