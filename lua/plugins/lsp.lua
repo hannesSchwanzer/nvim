@@ -144,6 +144,10 @@ return {
         servers.tsserver = {}
       end
 
+      if langs['json'] then
+        servers.jsonls = {}
+      end
+
       if langs['lua'] then
         servers.lua_ls = {
           -- cmd = {...},

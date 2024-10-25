@@ -52,19 +52,16 @@ vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
 -- Deletes without coping
-vim.keymap.set({ 'n', 'v' }, 'd', [["dd]])
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["dd]])
 vim.keymap.set({ 'n', 'v' }, 'D', [["dD]])
-vim.keymap.set('n', '<leader>d', '<cmd>let @+=@d<CR>')
 
-vim.keymap.set({ 'n', 'v' }, 'x', [["xx]])
-vim.keymap.set({ 'n', 'v' }, 'X', [["xX]])
+vim.keymap.set({ 'n', 'v' }, 'x', [["dx]])
+vim.keymap.set({ 'n', 'v' }, 'X', [["dX]])
 
-vim.keymap.set({ 'n', 'v' }, 'c', [["cc]])
-vim.keymap.set({ 'n', 'v' }, 'C', [["cC]])
+vim.keymap.set({ 'n', 'v' }, 'c', [["dc]])
+vim.keymap.set({ 'n', 'v' }, 'C', [["dC]])
 
 -- Formats the file if a lsp is running
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 
 vim.keymap.set('n', ' ', '<Nop>')
-
-vim.keymap.set("x", "<leader>p", [["_dP]])

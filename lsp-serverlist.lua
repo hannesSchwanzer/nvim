@@ -5,6 +5,7 @@ return {
   python = false,
   rust = false,
   typescript = false,
+  json = true,
 
   arduino = false,
   godot = false,
