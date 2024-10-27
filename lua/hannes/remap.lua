@@ -53,7 +53,6 @@ vim.keymap.set('n', 'N', 'Nzzzv')
 
 -- Deletes without coping
 vim.keymap.set({ 'n', 'v' }, '<leader>d', [["dd]])
-vim.keymap.set({ 'n', 'v' }, 'D', [["dD]])
 
 vim.keymap.set({ 'n', 'v' }, 'x', [["dx]])
 vim.keymap.set({ 'n', 'v' }, 'X', [["dX]])
