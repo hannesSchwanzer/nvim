@@ -1,11 +1,11 @@
 return {
-  lua = true,
+  lua = false,
   csharp = false,
   c = false,
   python = false,
   rust = false,
   typescript = false,
-  json = true,
+  json = false,
 
   arduino = false,
   godot = false,

@@ -1,10 +1,5 @@
 -- Get the Neovim config path
-local config_path = vim.fn.stdpath('config')
-
--- Add the config path to Lua's package.path
-package.path = config_path .. '/?.lua;' .. package.path
-
-require("hannes")
+--
 -- ordinary Neovim
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info

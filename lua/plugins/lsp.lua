@@ -1,4 +1,5 @@
 local langs = require("lsp-serverlist")
+
 return {
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
