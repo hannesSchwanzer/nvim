@@ -129,10 +129,6 @@ return {
         servers.clangd = {}
       end
 
-      if langs['arduino'] then
-        servers.arduino_language_server = {}
-      end
-
       if langs['python'] then
         servers.pyright = {}
       end

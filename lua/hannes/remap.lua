@@ -40,8 +40,12 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 --  See `:help lua-guide-autocommands`
 
 -- Move Lines
-vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
-vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { silent = true })
+
+-- Indent Lines
+vim.keymap.set('v', '<', '<gv', { silent = true })
+vim.keymap.set('v', '>', '>gv', { silent = true })
 
 -- Move Up or Down the page and center screen
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
@@ -65,97 +69,4 @@ vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 
 vim.keymap.set('n', ' ', '<Nop>')
 
--- -- Define the function to run the Python script interactively in a terminal
--- function RunPythonInteractive()
---   local file = vim.fn.expand('%')  -- Get the current file path
---   local cmd = 'python3 ' .. vim.fn.shellescape(file)
---
---   -- Open a split and run the command in an interactive terminal
---   -- vim.cmd('botright split')  -- Open a split at the bottom
---   -- vim.cmd('resize 15')       -- Resize the terminal split height
---   vim.fn.termopen(cmd, {
---     on_exit = function(_, exit_code)
---       if exit_code ~= 0 then
---         -- Capture the last error message output if the script exited with an error
---         local output = vim.fn.systemlist(cmd)
---
---         -- Parse errors and add them to the quickfix list
---         local qflist = {}
---         for _, line in ipairs(output) do
---           local filename, linenum = line:match('File "([^"]+)", line (%d+),')
---           if filename and linenum then
---             table.insert(qflist, {
---               filename = filename,
---               lnum = tonumber(linenum),
---               text = line
---             })
---           else
---             -- For non-traceback lines, just add the raw text (such as the final error message)
---             table.insert(qflist, { text = line })
---           end
---         end
---
---         -- Set the quickfix list with the captured error
---         vim.fn.setqflist(qflist, 'r')
---         vim.cmd('copen')  -- Open the quickfix window to show errors
---       else
---         print("Script completed successfully with no errors.")
---       end
---     end,
---   })
--- end
---
--- -- Set up an autocmd to map Ctrl+F5 only in Python files
--- vim.api.nvim_create_autocmd("FileType", {
---   pattern = "python",
---   callback = function()
---     -- Map Ctrl+F5 to run the Python script interactively
---     vim.api.nvim_buf_set_keymap(0, 'n', '<F6>', ':lua RunPythonInteractive()<CR>', { noremap = true, silent = true })
---   end
--- })
---
--- function Run_python_file()
---     local current_file = vim.fn.expand("%")
---     local cmd = "python3 " .. current_file
---
---     -- Öffne das Terminal und führe das Python-Skript aus
---     local job_id = vim.fn.jobstart(cmd, {
---         on_stdout = function(_, data)
---             if data and #data > 0 then
---                 for _, line in ipairs(data) do
---                     print(line)
---                 end
---             end
---         end,
---         on_stderr = function(_, data)
---             if data and #data > 0 then
---                 vim.fn.setqflist({}, ' ', { title = "Python Errors", lines = data })
---                 vim.api.nvim_command("copen")
---                 for _, line in ipairs(data) do
---                     print(line)
---                 end
---             end
---         end,
---         on_exit = function(_, exit_code)
---             if exit_code ~= 0 then
---                 print("Das Skript ist mit einem Fehler ausgeführt worden.")
---             end
---         end,
---         stdout_buffered = true,
---         stderr_buffered = true,
---     })
---
---     if job_id == 0 then
---         print("Fehler beim Starten des Jobs.")
---     end
--- end
---
--- -- Füge einen Tastatur-Shortcut für F6 hinzu
--- vim.api.nvim_set_keymap('n', '<F6>', ':lua run_python_file()<CR>', { noremap = true, silent = true })
---
--- vim.api.nvim_create_autocmd("FileType", {
---   pattern = "python",
---   callback = function()
---     vim.api.nvim_buf_set_keymap(0, 'n', '<F6>', ':lua Run_python_file()<CR>', { noremap = true, silent = true })
---   end
--- })
+vim.keymap.set('n', '<leader>rw', ':%s/\\<<C-r><C-w>\\>//g<left><left>')
