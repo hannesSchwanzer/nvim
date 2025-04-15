@@ -130,7 +130,29 @@ return {
       end
 
       if langs['python'] then
-        servers.pyright = {}
+        servers.pyright = {
+          settings = {
+            pyright = {
+              disableOrganizeImports = true,  -- Optional: if you want to disable organize imports
+              -- Add other pyright-specific settings here
+            },
+            python = {
+              analysis = {
+                -- Disable the specific warning you're seeing
+                diagnosticSeverityOverrides = {
+                  reportOptionalIterable = "warining",  -- or "warning" if you just want to downgrade it
+                  reportIndexIssue = "warning",
+                  reportOptionalSubscript = "warning",
+                  reportAssignmentType = "warning",
+                  reportOptionalMemberAccess = "warning",
+                  reportArgumentType = "warning",
+                },
+                -- Alternatively, you can disable all optional/member diagnostics
+                -- typeCheckingMode = "off",  -- This is more drastic
+              },
+            },
+          },
+        }
       end
 
       if langs['rust'] then
