@@ -12,11 +12,11 @@ return {
                 -- Use alt to interact with Copilot.
                 keymap = {
                     -- Disable the built-in mapping, we'll configure it in nvim-cmp.
-                    accept = false,
-                    accept_word = '<M-w>',
-                    accept_line = '<M-l>',
-                    next = '<M-n>',
-                    prev = '<M-p>',
+                    accept = '<c-y>',
+                    accept_word = '<c-w>',
+                    accept_line = '<c-l>',
+                    next = '<c-n>',
+                    prev = '<c-p>',
                     dismiss = '\\',
                 },
             },
