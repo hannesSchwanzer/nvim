@@ -17,7 +17,7 @@ return {
                     accept_line = '<c-l>',
                     next = '<c-n>',
                     prev = '<c-p>',
-                    dismiss = '\\',
+                    dismiss = '/',
                 },
             },
             filetypes = { ["*"] = true },

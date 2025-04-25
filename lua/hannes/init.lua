@@ -1,4 +1,4 @@
 require("hannes.set")
 require("hannes.remap")
-require("hannes.settings")
+require("hannes.autocommands")
 require("hannes.commands")
