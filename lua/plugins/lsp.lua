@@ -5,9 +5,9 @@ return {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
+      { 'williamboman/mason.nvim', commit = "fc98833" },
+      { 'williamboman/mason-lspconfig.nvim', commit = "1a31f82" },
+      { 'WhoIsSethDaniel/mason-tool-installer.nvim', commit = "1255518" },
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },

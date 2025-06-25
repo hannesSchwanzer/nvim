@@ -7,8 +7,8 @@ return {
     'nvim-neotest/nvim-nio',
 
     -- Installs the debug adapters for you
-    'williamboman/mason.nvim',
-    'jay-babu/mason-nvim-dap.nvim',
+    { 'williamboman/mason.nvim', commit = "fc98833" },
+    { 'jay-babu/mason-nvim-dap.nvim', commit = "4c2cdc6" },
 
     -- Add your own debuggers here
     {
