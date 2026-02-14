@@ -75,6 +75,8 @@ return {
           ['<C-l>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
               luasnip.expand_or_jump()
+            else
+              fallback()
             end
           end, { 'i', 's' }),
           ['<C-h>'] = cmp.mapping(function()

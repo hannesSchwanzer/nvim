@@ -18,6 +18,37 @@ return {
           return langs["csharp"]
         end
       },
+      {
+        "akinsho/flutter-tools.nvim",
+        cond = function ()
+          return langs["flutter"]
+        end,
+        event = "VeryLazy",
+        dependencies = {
+          "nvim-lua/plenary.nvim",
+          "stevearc/dressing.nvim",
+          "nvim-telescope/telescope.nvim",
+        },
+        config = function()
+          require("flutter-tools").setup {
+            fvm = false,
+            widget_guides = { enabled = true },
+            lsp = {
+              settings = {
+                showtodos = true,
+                completefunctioncalls = true,
+                analysisexcludedfolders = {
+                  vim.fn.expand("$Home/.pub-cache"),
+                },
+                renamefileswithclasses = "prompt",
+                updateimportsonrename = true,
+                enablesnippets = false,
+              },
+            },
+          }
+          require("telescope").load_extension("flutter")
+        end,
+      },
     },
     config = function()
       --  This function gets run when an LSP attaches to a particular buffer.

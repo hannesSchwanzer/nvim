@@ -10,5 +10,6 @@ return {
   arduino = false,
   godot = false,
   latex = false,
+  flutter = false,
 }
 
