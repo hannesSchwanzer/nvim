@@ -1,96 +1,189 @@
 local langs = require("lsp-serverlist")
 
+vim.api.nvim_create_augroup("DapGroup", { clear = true })
+
+local function navigate(args)
+    local buffer = args.buf
+
+    local wid = nil
+    local win_ids = vim.api.nvim_list_wins() -- Get all window IDs
+    for _, win_id in ipairs(win_ids) do
+        local win_bufnr = vim.api.nvim_win_get_buf(win_id)
+        if win_bufnr == buffer then
+            wid = win_id
+        end
+    end
+
+    if wid == nil then
+        return
+    end
+
+    vim.schedule(function()
+        if vim.api.nvim_win_is_valid(wid) then
+            vim.api.nvim_set_current_win(wid)
+        end
+    end)
+end
+
+local function create_nav_options(name)
+    return {
+        group = "DapGroup",
+        pattern = string.format("*%s*", name),
+        callback = navigate
+    }
+end
+
 return {
-  'mfussenegger/nvim-dap',
-  dependencies = {
-    'rcarriga/nvim-dap-ui',
-    'nvim-neotest/nvim-nio',
+  {
+    "mfussenegger/nvim-dap",
+    lazy = false,
+    config = function()
+      local dap = require("dap")
+      dap.set_log_level("DEBUG")
 
-    -- Installs the debug adapters for you
-    { 'williamboman/mason.nvim', commit = "fc98833" },
-    { 'jay-babu/mason-nvim-dap.nvim', commit = "4c2cdc6" },
-
-    -- Add your own debuggers here
-    {
-      'mfussenegger/nvim-dap-python',
-      cond = function ()
-        return langs['python']
-      end
-    }
+      vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
+      vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
+      vim.keymap.set('n', '<F2>', dap.step_over, { desc = 'Debug: Step Over' })
+      vim.keymap.set('n', '<F3>', dap.step_out, { desc = 'Debug: Step Out' })
+      vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
+      vim.keymap.set('n', '<leader>B', function()
+        dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+      end, { desc = 'Debug: Set Breakpoint' })
+    end
   },
-  config = function()
-    local dap = require 'dap'
-    local dapui = require 'dapui'
-
-    local debuggers_to_install = {}
-
-    if langs['python'] then
-      table.insert(debuggers_to_install, 'debugpy')
-    end
-
-    require('mason-nvim-dap').setup {
-      -- Makes a best effort to setup the various debuggers with
-      -- reasonable debug configurations
-      automatic_setup = true,
-
-      -- You can provide additional configuration to the handlers,
-      -- see mason-nvim-dap README for more information
-      handlers = {},
-
-      -- You'll need to check that you have the required things installed
-      -- online, please don't ask me how to install them :)
-      ensure_installed = {
-        'debugpy'
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+      local function layout(name)
+        return {
+          elements = {
+            { id = name },
+          },
+          enter = true,
+          size = 40,
+          position = "right",
+        }
+      end
+      local name_to_layout = {
+        repl = { layout = layout("repl"), index = 0 },
+        stacks = { layout = layout("stacks"), index = 0 },
+        scopes = { layout = layout("scopes"), index = 0 },
+        console = { layout = layout("console"), index = 0 },
+        watches = { layout = layout("watches"), index = 0 },
+        breakpoints = { layout = layout("breakpoints"), index = 0 },
       }
-      -- ensure_installed = debuggers_to_install
-      -- ensure_installed = {
-      --   -- Update this to ensure that you have the debuggers for the langs you want
-      --   langs['python'] and 'debugpy' or nil,
-      -- },
-    }
+      local layouts = {}
 
-    -- Basic debugging keymaps, feel free to change to your liking!
-    vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
-    vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
-    vim.keymap.set('n', '<F2>', dap.step_over, { desc = 'Debug: Step Over' })
-    vim.keymap.set('n', '<F3>', dap.step_out, { desc = 'Debug: Step Out' })
-    vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
-    vim.keymap.set('n', '<leader>B', function()
-      dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-    end, { desc = 'Debug: Set Breakpoint' })
+      for name, config in pairs(name_to_layout) do
+        table.insert(layouts, config.layout)
+        name_to_layout[name].index = #layouts
+      end
 
-    -- Dap UI setup
-   -- For more information, see |:help nvim-dap-ui|
-    dapui.setup {
-      -- Set icons to characters that are more likely to work in every terminal.
-      --    Feel free to remove or use ones that you like more! :)
-      --    Don't feel like these are good choices.
-      icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-      controls = {
-        icons = {
-          pause = '⏸',
-          play = '▶',
-          step_into = '⏎',
-          step_over = '⏭',
-          step_out = '⏮',
-          step_back = 'b',
-          run_last = '▶▶',
-          terminate = '⏹',
-          disconnect = '⏏',
+      local function toggle_debug_ui(name)
+        dapui.close()
+        local layout_config = name_to_layout[name]
+
+        if layout_config == nil then
+          error(string.format("bad name: %s", name))
+        end
+
+        local uis = vim.api.nvim_list_uis()[1]
+        if uis ~= nil then
+          layout_config.size = uis.width
+        end
+
+        pcall(dapui.toggle, layout_config.index)
+      end
+
+      vim.keymap.set("n", "<leader>dr", function() toggle_debug_ui("repl") end, { desc = "Debug: toggle repl ui" })
+      vim.keymap.set("n", "<leader>ds", function() toggle_debug_ui("stacks") end,
+        { desc = "Debug: toggle stacks ui" })
+      vim.keymap.set("n", "<leader>dw", function() toggle_debug_ui("watches") end,
+        { desc = "Debug: toggle watches ui" })
+      vim.keymap.set("n", "<leader>db", function() toggle_debug_ui("breakpoints") end,
+        { desc = "Debug: toggle breakpoints ui" })
+      vim.keymap.set("n", "<leader>dS", function() toggle_debug_ui("scopes") end,
+        { desc = "Debug: toggle scopes ui" })
+      vim.keymap.set("n", "<leader>dc", function() toggle_debug_ui("console") end,
+        { desc = "Debug: toggle console ui" })
+
+      vim.api.nvim_create_autocmd("BufEnter", {
+        group = "DapGroup",
+        pattern = "*dap-repl*",
+        callback = function()
+          vim.wo.wrap = true
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("dap-repl"))
+      vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("DAP Watches"))
+
+      dapui.setup({
+        layouts = layouts,
+        enter = true,
+        icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+        controls = {
+          icons = {
+            pause = '⏸',
+            play = '▶',
+            step_into = '⏎',
+            step_over = '⏭',
+            step_out = '⏮',
+            step_back = 'b',
+            run_last = '▶▶',
+            terminate = '⏹',
+            disconnect = '⏏',
+          },
         },
-      },
-    }
+      })
 
-    -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-    vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
+      dap.listeners.before.event_terminated.dapui_config = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited.dapui_config = function()
+        dapui.close()
+      end
 
-    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
+      dap.listeners.after.event_output.dapui_config = function(_, body)
+        if body.category == "console" then
+          dapui.eval(body.output) -- Sends stdout/stderr to Console
+        end
+      end
+    end,
+  },
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = {
+      "mason-org/mason.nvim",
+      "mfussenegger/nvim-dap",
+      "neovim/nvim-lspconfig",
 
-    -- Setup specific debuggers
-    if langs['python'] then
-      require("dap-python").setup("python")
-    end
-  end,
+
+      {
+        'mfussenegger/nvim-dap-python',
+        cond = function ()
+          return langs['python']
+        end
+      }
+
+    },
+    config = function()
+      require("mason-nvim-dap").setup({
+        ensure_installed = {
+        },
+        automatic_installation = true,
+        handlers = {
+          function(config)
+            require("mason-nvim-dap").default_setup(config)
+          end,
+        },
+      })
+      if langs['python'] then
+        require("dap-python").setup("python")
+      end
+    end,
+  },
 }
