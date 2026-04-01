@@ -20,7 +20,59 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  See `:help 'clipboard'`
 vim.opt.clipboard = 'unnamedplus'
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
+if vim.env.TMUX ~= nil then
+  local copy = {'tmux', 'load-buffer', '-w', '-'}
+  local paste = {'bash', '-c', 'tmux refresh-client -l && sleep 0.05 && tmux save-buffer -'}
+  vim.g.clipboard = {
+    name = 'tmux',
+    copy = {
+      ['+'] = copy,
+      ['*'] = copy,
+    },
+    paste = {
+      ['+'] = paste,
+      ['*'] = paste,
+    },
+    cache_enabled = 0,
+  }
+end
 
+-- vim.g.clipboard = {
+--   name = 'OSC 52',
+--   copy = {
+--     ['+'] = require('vim.clipboard.osc52').copy,
+--     ['*'] = require('vim.clipboard.osc52').copy,
+--   },
+--   paste = {
+--     ['+'] = require('vim.clipboard.osc52').paste,
+--     ['*'] = require('vim.clipboard.osc52').paste,
+--   },
+-- }
+vim.keymap.set("v", "<leader>y", '"+y', { noremap = true, silent = true })
+
+-- vim.g.clipboard = {
+--   name = "kitty-remote",
+--   copy = {
+--     ["+"] = "kitty +kitten clipboard --wait",
+--     ["*"] = "kitty +kitten clipboard --wait"
+--   },
+--   paste = {
+--     ["+"] = "kitty +kitten clipboard --get-clipboard",
+--     ["*"] = "kitty +kitten clipboard --get-clipboard"
+--   },
+--   cache_enabled = false,
+-- }
 -- Enable break indent
 vim.opt.breakindent = true
 
