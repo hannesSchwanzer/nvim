@@ -32,12 +32,6 @@ end, { desc = "Jump to floating window" })
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
-vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -80,4 +74,20 @@ vim.keymap.set({ 'n', 'v' }, 'C', [["dC]])
 
 vim.keymap.set('n', ' ', '<Nop>')
 
-vim.keymap.set('n', '<leader>rw', ':%s/\\<<C-r><C-w>\\>//g<left><left>')
+vim.keymap.set('n', '<leader>rw', ':%s/\\<<C-r><C-w>\\>//g<left><left>', { desc = 'Search and [r]eplace [w]ord under cursor' })
+
+vim.keymap.set('n', '<leader>rb', ':edit!<CR>', { desc = '[r]eload current [b]uffer from disk' })
+vim.keymap.set('n', '<leader>cb', function()
+  -- Get list of buffers currently open in a window
+  local visible = {}
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    visible[vim.api.nvim_win_get_buf(win)] = true
+  end
+  -- Close all non-visible listed buffers
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and not visible[buf] then
+      vim.cmd('bdelete ' .. buf)
+    end
+  end
+end, { desc = '[c]lose all non-visible [b]uffers' })
+
