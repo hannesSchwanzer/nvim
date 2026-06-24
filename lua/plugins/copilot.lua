@@ -2,6 +2,7 @@
 return {
     {
         'zbirenbaum/copilot.lua',
+        version = "v2.0.4",
         cmd = 'Copilot',
         -- event = 'InsertEnter',
         opts = {
@@ -21,6 +22,9 @@ return {
                 },
             },
             filetypes = { ["*"] = true },
+        },
+        dependencies = {
+            "copilotlsp-nvim/copilot-lsp",
         },
         config = function(_, opts)
             local cmp = require 'cmp'

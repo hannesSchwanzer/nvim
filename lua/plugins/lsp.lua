@@ -5,14 +5,13 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for neovim
-      -- { 'williamboman/mason.nvim', commit = "fc98833" },
       {
         "mason-org/mason.nvim",
         opts = {}
       },
-      -- { 'williamboman/mason-lspconfig.nvim', commit = "1a31f82" },
-      "mason-org/mason-lspconfig.nvim",
-      -- { 'WhoIsSethDaniel/mason-tool-installer.nvim', commit = "1255518" },
+      {
+        "mason-org/mason-lspconfig.nvim",
+      },
       "stevearc/dressing.nvim",
 
       -- Useful status updates for LSP.
@@ -156,31 +155,42 @@ return {
       servers.omnisharp = {}
       servers.texlab = {}
       servers.clangd = {}
-      servers.pyright = {
+      servers.nixd = {}
+      -- servers.pyright = {
+      --   settings = {
+      --     pyright = {
+      --       disableOrganizeImports = true, -- Optional: if you want to disable organize imports
+      --       -- Add other pyright-specific settings here
+      --     },
+      --     python = {
+      --       analysis = {
+      --         -- Disable the specific warning you're seeing
+      --         diagnosticSeverityOverrides = {
+      --           reportOptionalIterable = "warning", -- or "warning" if you just want to downgrade it
+      --           reportIndexIssue = "warning",
+      --           reportOptionalSubscript = "warning",
+      --           reportAssignmentType = "warning",
+      --           reportOptionalMemberAccess = "warning",
+      --           reportArgumentType = "warning",
+      --         },
+      --         -- Alternatively, you can disable all optional/member diagnostics
+      --         -- typeCheckingMode = "off",  -- This is more drastic
+      --       },
+      --     },
+      --   },
+      -- }
+      servers.basedpyright = {
         settings = {
-          pyright = {
-            disableOrganizeImports = true, -- Optional: if you want to disable organize imports
-            -- Add other pyright-specific settings here
-          },
-          python = {
+          basedpyright = {
             analysis = {
-              -- Disable the specific warning you're seeing
-              diagnosticSeverityOverrides = {
-                reportOptionalIterable = "warning", -- or "warning" if you just want to downgrade it
-                reportIndexIssue = "warning",
-                reportOptionalSubscript = "warning",
-                reportAssignmentType = "warning",
-                reportOptionalMemberAccess = "warning",
-                reportArgumentType = "warning",
-              },
-              -- Alternatively, you can disable all optional/member diagnostics
-              -- typeCheckingMode = "off",  -- This is more drastic
+              typeCheckingMode = "standard",
             },
           },
         },
       }
       servers.rust_analyzer = {}
-      servers.tsserver = {}
+      -- servers.tsserver = {}
+      servers.ts_ls = {}
       servers.jsonls = {}
       servers.lua_ls = {
         -- cmd = {...},
@@ -208,19 +218,22 @@ return {
           },
         },
       }
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
 
-
+      -- TODO: Check if using nixos, if not setup servers
+      -- require("mason-lspconfig").setup({
+      --   ensure_installed = vim.tbl_keys(servers),
+      -- })
       for server_name, server in pairs(servers) do
-        server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+        server.capabilities = vim.tbl_deep_extend(
+          "force",
+          {},
+          capabilities,
+          server.capabilities or {}
+        )
 
         vim.lsp.config(server_name, server)
         vim.lsp.enable(server_name)
       end
-      -- require("mason-lspconfig").setup {
-      --   ensure_installed = vim.tbl_keys(servers),
-      -- }
     end,
   },
 }
