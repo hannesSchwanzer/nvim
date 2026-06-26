@@ -2,7 +2,7 @@
 return {
     {
         'zbirenbaum/copilot.lua',
-        version = "v2.0.4",
+        -- version = "v2.0.4",
         cmd = 'Copilot',
         -- event = 'InsertEnter',
         opts = {
